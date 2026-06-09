@@ -1,0 +1,2691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoinLogix</title>
+<style>
+  :root {
+    --gold: #8a6f2e;
+    --gold-light: #b8952a;
+    --gold-dark: #6b5420;
+    --bg: #f0ebe0;
+    --bg2: #e8e0d0;
+    --bg3: #ddd5c0;
+    --border: #c8bfa8;
+    --text: #3a2e1e;
+    --text-muted: #7a6a52;
+    --red: #b03020;
+    --green: #3a7a40;
+    --input-bg: #f8f4ec;
+    --font: 'Futura Std', 'Century Gothic', 'Trebuchet MS', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-weight: 400;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--gold-dark);
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+
+  .logo {
+    font-family: var(--font);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gold-dark);
+    letter-spacing: 0.05em;
+  }
+
+  .logo span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-left: 10px;
+    vertical-align: middle;
+  }
+
+  .logo .ver {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-left: 6px;
+    vertical-align: super;
+  }
+
+  .header-nav {
+    display: flex;
+    gap: 8px;
+  }
+
+  /* ---- REV5.d: Hamburger + Tools dropdown ---- */
+  .hamburger-wrap {
+    position: relative;
+  }
+  .hamburger-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 6px 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 36px;
+  }
+  .hamburger-btn span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: background 0.2s;
+  }
+  .hamburger-btn:hover span { background: var(--gold); }
+
+  .tools-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    min-width: 210px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    z-index: 500;
+    overflow: hidden;
+  }
+  .tools-dropdown.open { display: block; }
+  .tools-dropdown-item {
+    padding: 11px 16px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text);
+    transition: background 0.15s;
+  }
+  .tools-dropdown-item:hover { background: var(--bg3); }
+  .tools-dropdown-divider { height: 1px; background: var(--border); margin: 2px 0; }
+  .tools-dropdown-soon { opacity: 0.45; cursor: default; }
+  .tools-dropdown-soon:hover { background: none; }
+  .tools-dropdown-soon span { font-size: 0.75rem; color: var(--text-muted); margin-left: 6px; }
+
+  /* ---- REV5.d: Manage Value Lists modal ---- */
+  .tools-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 900;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px 16px;
+  }
+  .tools-modal-overlay.open { display: flex; }
+  .tools-modal {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: min(100%, 440px);
+    max-height: 80vh;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+  }
+  .tools-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 1rem;
+    flex-shrink: 0;
+    color: #fff;
+  }
+  .tools-modal-close {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--text);
+    font-size: 1rem;
+    cursor: pointer;
+    line-height: 1;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tools-modal-close:hover { background: var(--gold-dark); color: var(--bg); }
+  .tools-modal-body { padding: 20px; overflow-y: auto; flex: 1; color: #fff; }
+  .tools-modal-body select { width: 100%; margin-bottom: 16px; }
+  .tools-modal-body .field label { color: #fff; }
+  .tools-modal-body input[type="text"] { color: #fff; background: var(--input-bg); }
+  .tools-modal-footer {
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    flex-shrink: 0;
+  }
+  .vl-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    color: #fff;
+  }
+  .vl-item-label { flex: 1; }
+  .vl-item-desc { font-size: 0.75rem; color: #f0f0f0; font-style: italic; margin-left: 8px; flex: 2; }
+  .vl-item-del {
+    background: none;
+    border: 1px solid #c0392b44;
+    border-radius: 4px;
+    color: #e74c3c;
+    padding: 3px 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+  .vl-item-del:hover { background: #e74c3c22; }
+  .vl-item-edit {
+    background: none;
+    border: 1px solid #3498db44;
+    border-radius: 4px;
+    color: #3498db;
+    padding: 3px 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    margin-right: 4px;
+  }
+  .vl-item-edit:hover { background: #3498db22; }
+  .vl-confirm {
+    background: var(--bg2);
+    border: 1px solid var(--gold-dark);
+    border-radius: 8px;
+    padding: 14px;
+    margin-top: 12px;
+    font-size: 0.88rem;
+    color: #fff;
+  }
+  .vl-confirm-msg { margin-bottom: 10px; }
+  .vl-confirm-btns { display: flex; gap: 8px; justify-content: flex-end; }
+  .btn-danger { background: #c0392b; border-color: #c0392b; color: #fff; }
+  .btn-danger:hover { background: #e74c3c; }
+  .vl-clear-wrap { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); text-align: right; }
+
+  /* ---- REV5.e: Legend modal content styling ---- */
+  .legend-section {
+    margin-bottom: 20px;
+  }
+  .legend-section-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #fff;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+    padding-bottom: 6px;
+  }
+  .legend-entry {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.2);
+  }
+  .legend-entry-key {
+    font-weight: 600;
+    color: #fff;
+    min-width: 100px;
+    flex-shrink: 0;
+  }
+  .legend-entry-desc {
+    color: #f0f0f0;
+    flex: 1;
+    font-size: 0.9rem;
+  }
+  .legend-entry-empty {
+    color: #ccc;
+    font-style: italic;
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+
+  @media print {
+    .tools-modal-header, .tools-modal-footer { display: none; }
+    .legend-section { page-break-inside: avoid; }
+  }
+
+  /* ---- REV6: Grading Wizard ---- */
+  .wizard-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 900;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px 16px;
+  }
+  .wizard-modal-overlay.open { display: flex; }
+  .wizard-modal {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: min(100%, 560px);
+    max-height: 80vh;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+  }
+  .wizard-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 1rem;
+    flex-shrink: 0;
+    color: #fff;
+  }
+  .wizard-modal-close {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--text);
+    font-size: 1rem;
+    cursor: pointer;
+    line-height: 1;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .wizard-modal-close:hover { background: var(--gold-dark); color: var(--bg); }
+  .wizard-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+    color: #fff;
+  }
+  .wizard-modal-body .field label { color: #fff; }
+  .wizard-modal-body input[type="text"], .wizard-modal-body input[type="number"] { color: #fff; background: var(--input-bg); }
+  .wizard-modal-footer {
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  /* Wizard question styling */
+  .wizard-question {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+  }
+  .wizard-question:last-child { border-bottom: none; }
+  .wizard-question-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #fff;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .wizard-question-hint {
+    font-size: 0.75rem;
+    color: #ccc;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .wizard-slider-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .wizard-slider {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .wizard-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    border: 2px solid #333;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  .wizard-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    border: 2px solid #333;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  .wizard-slider-value {
+    min-width: 30px;
+    text-align: center;
+    font-weight: 600;
+    color: #fff;
+    font-size: 0.9rem;
+  }
+  .wizard-slider-scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: #aaa;
+    margin-top: 4px;
+    padding: 0 2px;
+  }
+  .wizard-callout {
+    background: rgba(106, 184, 112, 0.2);
+    border-left: 3px solid #6ab870;
+    padding: 10px;
+    margin-top: 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #d4e8d8;
+  }
+
+  /* Results section */
+  .wizard-results {
+    display: none;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 16px;
+  }
+  .wizard-results.show { display: block; }
+  .wizard-results-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #fff;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .wizard-result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .wizard-result-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .wizard-result-label {
+    font-size: 0.85rem;
+    color: #ccc;
+    font-weight: 500;
+  }
+  .wizard-result-value {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #fff;
+  }
+  .wizard-warning {
+    background: rgba(255, 193, 7, 0.2);
+    border: 1px solid #ffc107;
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 12px;
+    font-size: 0.8rem;
+    color: #ffd966;
+  }
+  .wizard-warning-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  /* PCGS section in wizard */
+  .wizard-pcgs-section {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+  }
+  .wizard-pcgs-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+    color: #fff;
+  }
+  .wizard-pcgs-link {
+    display: inline-block;
+    background: #0066cc;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+  }
+  .wizard-pcgs-link:hover { background: #0052a3; color: #fff; }
+  .wizard-pcgs-dropdown {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .btn {
+    padding: 7px 16px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn:hover { border-color: var(--gold-dark); color: var(--gold-light); }
+
+  .btn-primary {
+    background: var(--gold-dark);
+    border-color: var(--gold);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .btn-primary:hover { background: var(--gold); color: var(--bg); }
+
+  /* MAIN LAYOUT */
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px 16px;
+  }
+
+  /* COIN ID BAR */
+  .coinid-bar {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .coinid-bar label {
+    font-size: 0.8rem;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+  }
+
+  .coinid-input {
+    background: var(--input-bg);
+    border: 1px solid var(--gold-dark);
+    border-radius: 4px;
+    color: var(--gold-light);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    padding: 6px 12px;
+    width: 120px;
+    text-align: center;
+  }
+
+  .coinid-input:focus { outline: none; border-color: var(--gold); }
+
+  /* GRID LAYOUT */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  @media (max-width: 640px) {
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+
+  /* PANELS */
+  .panel {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .panel-header {
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 16px;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+  }
+
+  .panel-body {
+    padding: 16px;
+  }
+
+  /* FORM FIELDS */
+  .field {
+    margin-bottom: 14px;
+  }
+
+  .field:last-child { margin-bottom: 0; }
+
+  .field label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 5px;
+  }
+
+  .field label .required { color: var(--gold); margin-left: 2px; }
+
+  select, input[type="text"], input[type="number"], input[type="date"], textarea {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 0.9rem;
+    padding: 8px 10px;
+    transition: border-color 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a8070' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+  }
+
+  select:focus, input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--gold-dark);
+  }
+
+  select:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .autofill {
+    background: #eaf2ea;
+    border-color: #a8c8a8;
+    color: #3a6a3a;
+  }
+
+  /* RADIO GROUP */
+  .radio-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--text);
+    text-transform: none;
+    letter-spacing: 0;
+    cursor: pointer;
+    margin-bottom: 0;
+  }
+
+  .radio-group input[type="radio"] {
+    width: auto;
+    accent-color: var(--gold);
+  }
+
+  /* SPECS GRID */
+  .specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* PHOTO AREA */
+  .photo-panel {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .photos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+  }
+
+  @media (max-width: 640px) {
+    .photos-grid { grid-template-columns: 1fr; }
+  }
+
+  .photo-slot {
+    padding: 16px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .photo-slot:last-child { border-right: none; }
+
+  .photo-slot-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    align-self: flex-start;
+  }
+
+  .photo-box {
+    width: 100%;
+    aspect-ratio: 1;
+    background: var(--bg3);
+    border: 1px dashed var(--border);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    padding: 16px;
+  }
+
+  .photo-box:hover { border-color: var(--gold-dark); }
+
+  .photo-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  #refPhotoPlaceholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+  }
+
+  .photo-box input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* BOTTOM BAR */
+  .bottom-bar {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .nav-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* REV4.d: vertical separator between nav buttons and Save */
+  .btn-divider {
+    width: 1px;
+    align-self: stretch;
+    background: var(--border);
+    margin: 0 6px;
+  }
+
+  /* STATUS */
+  .status {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .status.ok { color: var(--green); }
+  .status.err { color: var(--red); }
+
+  /* LOADING SPINNER */
+  .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--border);
+    border-top-color: var(--gold-dark);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .hidden { display: none !important; }
+
+  /* ABOUT TEXTAREA */
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.5;
+  }
+
+  /* REV7: Enlarge About This Coin textarea */
+  #aboutCoin {
+    min-height: 200px;
+  }
+
+  /* REV7: Navigation buttons and modals */
+  .record-counter {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    padding: 4px 8px;
+    background: var(--bg2);
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  .nav-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 900;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .nav-modal-overlay.open { display: flex; }
+  .nav-modal {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: min(100%, 400px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    padding: 24px;
+    color: #fff;
+  }
+  .nav-modal-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    color: #fff;
+  }
+  .nav-modal-message {
+    font-size: 0.9rem;
+    color: #f0f0f0;
+    margin-bottom: 20px;
+  }
+  .nav-modal-input {
+    width: 100%;
+    margin-bottom: 16px;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: #fff;
+    padding: 8px 10px;
+  }
+  .nav-modal-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+  .nav-modal-buttons .btn {
+    flex: 1;
+  }
+  .nav-modal-buttons .btn-danger {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+  }
+  .nav-modal-buttons .btn-danger:hover {
+    background: #e74c3c;
+  }
+
+  /* REV4: add-new value-list inline editor */
+  .addnew-box {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .addnew-box input[type="text"] { flex: 1; }
+  .addnew-box .btn { padding: 6px 10px; font-size: 0.8rem; white-space: nowrap; }
+
+  /* REV4: small helper tip under a field */
+  .field-tip {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 7px;
+    line-height: 1.45;
+  }
+  .legend-tip {
+    font-size: 0.75rem;
+    color: var(--gold);
+    font-style: italic;
+    margin-top: 4px;
+    min-height: 1em;
+  }
+
+  /* REV4: mini inline button (e.g. Mint-Direct) */
+  .mini-btn {
+    font-family: var(--font);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gold-dark);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 7px;
+    margin-left: 8px;
+    cursor: pointer;
+    vertical-align: middle;
+  }
+  .mini-btn:hover { border-color: var(--gold-dark); color: var(--gold-light); }
+
+  /* REV4.b: grouped sub-boxes (Verified vs Estimated grade) */
+  .subbox {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px 14px;
+    background: rgba(255, 255, 255, 0.22);
+  }
+  .subbox + .subbox { margin-top: 14px; }
+  .subbox-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .subbox-hint {
+    text-transform: none;
+    letter-spacing: 0;
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    margin-left: 4px;
+  }
+  .estimated-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 7px;
+    padding: 22px 10px;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.85rem;
+  }
+  .estimated-placeholder span {
+    font-style: normal;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--gold);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">CoinLogix <span>U.S. Coins</span><span class="ver">rev9.d</span></div>
+  <div class="header-nav">
+    <button class="btn" onclick="showAllRecords()">Show All</button>
+    <button class="btn" onclick="findByCoinId()">Search</button>
+  </div>
+  <div class="hamburger-wrap" id="hamburgerWrap">
+    <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleToolsMenu()" title="Tools">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="tools-dropdown" id="toolsDropdown">
+      <div class="tools-dropdown-item" onclick="openTool('manageValueLists')">&#128203; Manage Value Lists</div>
+      <div class="tools-dropdown-divider"></div>
+      <div class="tools-dropdown-item" onclick="openTool('legend')">&#128269; Legend</div>
+      <div class="tools-dropdown-item tools-dropdown-soon">&#128228; Export <span>coming soon</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- COIN ID -->
+  <div class="coinid-bar">
+    <label>Coin ID <span class="required">*</span></label>
+    <input type="text" id="coinId" class="coinid-input" placeholder="Enter ID">
+    <button class="btn" onclick="findByCoinId()">Find by ID</button>
+    <span id="statusMsg" class="status"></span>
+  </div>
+
+  <!-- ROW 1: Category cascade + Reference Photo -->
+  <div class="grid-2">
+
+    <!-- CASCADE PANEL -->
+    <div class="panel">
+      <div class="panel-header">Coin Identity</div>
+      <div class="panel-body">
+
+        <div class="field">
+          <label>Category <span class="required">*</span></label>
+          <select id="category" onchange="onCategoryChange()">
+            <option value="">— Select —</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Subcategory / Denomination <span class="required">*</span></label>
+          <select id="subtype" onchange="onSubtypeChange()" disabled>
+            <option value="">— Select Category first —</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Coin Type <span class="required">*</span></label>
+          <select id="coinType" onchange="onCoinTypeChange()" disabled>
+            <option value="">— Select Subcategory first —</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Legal Tender Value</label>
+          <input type="text" id="legalTenderValue" class="autofill" readonly placeholder="Auto-filled">
+        </div>
+
+        <div class="field">
+          <label>Variety</label>
+          <input type="text" id="variety" placeholder="e.g. BU, Proof, Error...">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- REFERENCE PHOTO -->
+    <div class="panel">
+      <div class="panel-header">Reference Photo</div>
+      <div class="panel-body" style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div class="photo-box" id="refPhotoBox" style="width:100%; max-width:280px; aspect-ratio:4/3;">
+          <span id="refPhotoPlaceholder" style="color:var(--text-muted); font-size:0.85rem;">No reference image</span>
+          <img id="refPhotoImg" style="display:none;">
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 2: Year/Mint + Specs -->
+  <div class="grid-2" style="margin-bottom:16px;">
+
+    <div class="panel">
+      <div class="panel-header">Date &amp; Mint</div>
+      <div class="panel-body">
+        <div class="field">
+          <label>Year <span class="required">*</span></label>
+          <input type="text" id="year" placeholder="e.g. 1964" maxlength="4" onchange="lookupMintage()">
+        </div>
+        <div class="field">
+          <label>Mint Mark</label>
+          <select id="mintMark" onchange="lookupMintage()">
+            <option value="">— None / Unknown —</option>
+            <option>P - Philadelphia</option>
+            <option>D - Denver</option>
+            <option>S - San Francisco</option>
+            <option>O - New Orleans</option>
+            <option>CC - Carson City</option>
+            <option>W - West Point</option>
+            <option>C - Charlotte</option>
+            <option>D - Dahlonega</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Mintage</label>
+          <input type="text" id="mintage" class="autofill" readonly placeholder="Auto-filled">
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">Coin Specifications</div>
+      <div class="panel-body">
+        <div class="specs-grid">
+          <div class="field">
+            <label>Diameter (mm)</label>
+            <input type="text" id="diameter" class="autofill" readonly placeholder="Auto">
+          </div>
+          <div class="field">
+            <label>Weight (gr)</label>
+            <input type="text" id="weight" class="autofill" readonly placeholder="Auto">
+          </div>
+        </div>
+        <div class="field">
+          <label>Composition</label>
+          <input type="text" id="composition" class="autofill" readonly placeholder="Auto-filled">
+        </div>
+        <div class="field">
+          <label>Edge</label>
+          <div class="radio-group" id="edgeGroup">
+            <label><input type="radio" name="edge" value="Plain"> Plain</label>
+            <label><input type="radio" name="edge" value="Reeded"> Reeded</label>
+            <label><input type="radio" name="edge" value="Lettered"> Lettered</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 3: Grade/Cert + Price/Value -->
+  <div class="grid-2" style="margin-bottom:16px;">
+
+    <div class="panel">
+      <div class="panel-header">Grade &amp; Certification</div>
+      <div class="panel-body">
+        <div class="subbox">
+          <div class="subbox-label">Verified Grade <span class="subbox-hint">— grades you can stand behind</span></div>
+        <div class="field">
+          <label>Grade <button type="button" class="mini-btn" onclick="setMintDirect()" title="Coins bought direct from the U.S. Mint: sets grade to MS-63">Mint-Direct</button></label>
+          <select id="grade">
+            <option value="">— Select —</option>
+            <optgroup label="Mint State">
+              <option>MS-70 - Perfect Uncirculated</option>
+              <option>MS-69 - Near Perfect</option>
+              <option>MS-68</option><option>MS-67</option><option>MS-66</option>
+              <option>MS-65 - Gem Uncirculated</option>
+              <option>MS-64</option><option>MS-63</option>
+              <option>MS-62</option><option>MS-61</option>
+              <option>MS-60 - Mint State</option>
+            </optgroup>
+            <optgroup label="About Uncirculated">
+              <option>AU-58 - Choice About Uncirculated</option>
+              <option>AU-55</option><option>AU-53</option><option>AU-50</option>
+            </optgroup>
+            <optgroup label="Extremely Fine">
+              <option>EF-45 - Choice Extremely Fine</option>
+              <option>EF-40 - Extremely Fine</option>
+            </optgroup>
+            <optgroup label="Very Fine">
+              <option>VF-35</option><option>VF-30</option>
+              <option>VF-25</option><option>VF-20 - Very Fine</option>
+            </optgroup>
+            <optgroup label="Fine">
+              <option>F-15</option><option>F-12 - Fine</option>
+            </optgroup>
+            <optgroup label="Very Good">
+              <option>VG-10</option><option>VG-8 - Very Good</option>
+            </optgroup>
+            <optgroup label="Good">
+              <option>G-6</option><option>G-4 - Good</option>
+            </optgroup>
+            <optgroup label="Other">
+              <option>AG-3 - About Good</option>
+              <option>FR-2 - Fair</option>
+              <option>PO-1 - Poor</option>
+              <option>PR-70 - Proof 70</option>
+              <option>PR-69</option><option>PR-68</option>
+              <option>PR-67</option><option>PR-66</option>
+              <option>PR-65 - Gem Proof</option>
+              <option>PR-64</option><option>PR-63</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="field">
+          <label>Certification No.</label>
+          <input type="text" id="certNo" placeholder="Enter number">
+        </div>
+        <div class="field">
+          <label>Certifying Agency</label>
+          <select id="certAgency">
+            <option value="">— None —</option>
+          </select>
+          <p class="legend-tip" id="certAgency-tip"></p>
+        </div>
+        </div><!-- /Verified Grade subbox -->
+
+        <div class="subbox">
+          <div class="subbox-label">Estimated Grade <span class="subbox-hint">— for ungraded coins</span></div>
+          <div style="display:flex; gap:8px; align-items:flex-start;">
+            <input type="text" id="estimatedGrade" placeholder="(calculated by wizard)" style="flex:1;">
+            <button type="button" class="btn btn-primary" onclick="openWizard()" style="white-space:nowrap;" title="Open Grading Wizard">📊 Wizard</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">Acquisition &amp; Value</div>
+      <div class="panel-body">
+        <div class="field">
+          <label>Purchase Date</label>
+          <input type="date" id="purchaseDate">
+        </div>
+        <div class="field">
+          <label>Seller</label>
+          <select id="purchasedFrom">
+            <option value="">— Select —</option>
+          </select>
+          <p class="legend-tip" id="purchasedFrom-tip"></p>
+        </div>
+        <div class="field">
+          <label>Seller Detail</label>
+          <input type="text" id="sellerDetail" placeholder="e.g. username, store, auction lot...">
+        </div>
+        <div class="specs-grid">
+          <div class="field">
+            <label>Price Each ($)</label>
+            <input type="number" id="priceEach" placeholder="0.00" step="0.01" oninput="computeTotal()" onblur="formatMoney(this)">
+          </div>
+          <div class="field">
+            <label>Quantity</label>
+            <input type="number" id="qty" value="1" min="1" step="1" oninput="computeTotal()">
+          </div>
+        </div>
+        <div class="field">
+          <label>Total Paid ($)</label>
+          <input type="number" id="totalPaid" class="autofill" readonly placeholder="Auto (Price × Qty)">
+        </div>
+        <div class="field">
+          <label>Current Value ($)</label>
+          <input type="number" id="currentValue" placeholder="0.00" step="0.01">
+        </div>
+        <div class="field">
+          <label>Location</label>
+          <select id="location">
+            <option value="">— Select —</option>
+          </select>
+          <p class="legend-tip" id="location-tip"></p>
+          <p class="field-tip">Tip: Add new locations sparingly — a few clear, <strong><em>consistent</em></strong> labels keep your list tidy. Too many similar entries get messy fast.<br>&#9989; Do: &ldquo;Safe&rdquo; &nbsp;&mdash;&nbsp; &#10060; Don&rsquo;t: &ldquo;Safe&rdquo;, &ldquo;safe&rdquo;, &ldquo;Big Safe&rdquo;&hellip;</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PHOTOS -->
+  <div class="photo-panel">
+    <div class="panel-header">Photos</div>
+    <div class="photos-grid">
+      <div class="photo-slot">
+        <div class="photo-slot-label">Obverse</div>
+        <div class="photo-box">
+          <span>Click to upload</span>
+          <input type="file" accept="image/*" onchange="previewPhoto(this, 'obverseImg')">
+          <img id="obverseImg" style="display:none;">
+        </div>
+      </div>
+      <div class="photo-slot">
+        <div class="photo-slot-label">Reverse</div>
+        <div class="photo-box">
+          <span>Click to upload</span>
+          <input type="file" accept="image/*" onchange="previewPhoto(this, 'reverseImg')">
+          <img id="reverseImg" style="display:none;">
+        </div>
+      </div>
+      <div class="photo-slot">
+        <div class="photo-slot-label">Notes</div>
+        <textarea id="notes" style="width:100%; height:100%; min-height:160px;" placeholder="Purchase notes, observations..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT THIS COIN -->
+  <div class="panel" style="margin-bottom:16px;">
+    <div class="panel-header">About This Coin</div>
+    <div class="panel-body">
+      <textarea id="aboutCoin" placeholder="AI-generated description will appear here after coin type is selected..."></textarea>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-bar">
+    <div class="nav-btns">
+      <button class="btn" onclick="firstRecord()" title="First record">⏮ First</button>
+      <button class="btn" onclick="prevRecord()" title="Previous record">◀ Previous</button>
+      <button class="btn" onclick="nextRecord()" title="Next record">Next ▶</button>
+      <button class="btn" onclick="lastRecord()" title="Last record">Last ⏭</button>
+      <span class="record-counter" id="recordCounter">No records</span>
+      <button class="btn" onclick="openDuplicateModal()" title="Duplicate this record">Duplicate</button>
+      <button class="btn btn-primary" onclick="newRecord()">+ Add New</button>
+      <span class="btn-divider"></span>
+      <button class="btn btn-primary" onclick="saveRecord()">Save</button>
+    </div>
+    <div class="nav-btns">
+      <button class="btn" style="border-color:var(--red); color:var(--red);" onclick="openDeleteModal()" title="Delete this record">Delete</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://vdzobapynjblwylchtru.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZkem9iYXB5bmpibHd5bGNodHJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzNjk3MTIsImV4cCI6MjA5NDk0NTcxMn0.hJwqgyuI4PcztO_HXb32ONaTJTil_vkxvFnNVThNrAA';
+
+  // Supabase Storage bucket where reference photos will live (create this bucket later)
+  const REF_PHOTO_BUCKET = 'reference-photos/CoinLogix_Refs';
+
+  // Future CoinLogix Currency app — leave blank until it exists
+  const CURRENCY_APP_URL = '';
+
+  // Dropdowns backed by the value_lists table (editable, with "+ Add new…")
+  const VALUE_LIST_SELECTS = [
+    { id: 'location',     list: 'location' },
+    { id: 'certAgency',   list: 'cert_agency' },
+    { id: 'purchasedFrom', list: 'seller' }
+  ];
+  let valueLists = {};
+
+  let allCoinTypes = [];
+
+  async function sbFetch(path) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    return res.json();
+  }
+
+  async function sbInsert(table, obj) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify(obj)
+    });
+    if (!res.ok) throw new Error('Insert failed: ' + res.status);
+    return res.json();
+  }
+
+  // ---- REV5.c: PATCH helper for updating existing rows ----
+  async function sbUpdate(table, id, obj) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+      method: 'PATCH',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(obj)
+    });
+    if (!res.ok) throw new Error('Update failed: ' + res.status);
+  }
+
+  function setStatus(msg, type='') {
+    const el = document.getElementById('statusMsg');
+    el.textContent = msg;
+    el.className = 'status ' + type;
+  }
+
+  // LOAD CATEGORIES
+  async function loadCategories() {
+    setStatus('Loading...', '');
+    try {
+      const data = await sbFetch('Categories?select=name&order=id');
+      const sel = document.getElementById('category');
+      data.forEach(row => {
+        const opt = document.createElement('option');
+        opt.value = row.name;
+        opt.textContent = row.name;
+        sel.appendChild(opt);
+      });
+      setStatus('Ready', 'ok');
+    } catch(e) {
+      setStatus('Connection error', 'err');
+    }
+  }
+
+  // LOAD ALL COIN TYPES ONCE
+  async function loadAllCoinTypes() {
+    allCoinTypes = await sbFetch('cointypes?select=name,category,subtype,composition,diameter_mm,weight_gr,ref_photo,blurb,edge&order=name');
+  }
+
+  function onCategoryChange() {
+    const cat = document.getElementById('category').value;
+    const subtypeSel = document.getElementById('subtype');
+    const coinTypeSel = document.getElementById('coinType');
+
+    // Currency is handled by the separate CoinLogix Currency app (launcher)
+    if (cat === 'Currency') {
+      if (CURRENCY_APP_URL) {
+        window.open(CURRENCY_APP_URL, '_blank');
+        setStatus('Opening CoinLogix Currency…', '');
+      } else {
+        setStatus('CoinLogix Currency app — coming soon', '');
+      }
+      document.getElementById('category').value = '';
+      subtypeSel.innerHTML = '<option value="">— Select Category first —</option>';
+      subtypeSel.disabled = true;
+      coinTypeSel.innerHTML = '<option value="">— Select Subcategory first —</option>';
+      coinTypeSel.disabled = true;
+      clearAutofills();
+      return;
+    }
+
+    // Reset downstream
+    subtypeSel.innerHTML = '<option value="">— Select —</option>';
+    coinTypeSel.innerHTML = '<option value="">— Select Subcategory first —</option>';
+    coinTypeSel.disabled = true;
+    clearAutofills();
+
+    if (!cat) { subtypeSel.disabled = true; return; }
+
+    // Get unique subtypes for this category
+    const subtypes = [...new Set(
+      allCoinTypes
+        .filter(ct => ct.category === cat)
+        .map(ct => ct.subtype || '')
+    )].sort();
+
+    subtypes.forEach(st => {
+      const opt = document.createElement('option');
+      opt.value = st;
+      opt.textContent = st || '(none)';
+      subtypeSel.appendChild(opt);
+    });
+
+    subtypeSel.disabled = false;
+  }
+
+  function onSubtypeChange() {
+    const cat = document.getElementById('category').value;
+    const st = document.getElementById('subtype').value;
+    const coinTypeSel = document.getElementById('coinType');
+
+    coinTypeSel.innerHTML = '<option value="">— Select —</option>';
+    clearAutofills();
+
+    if (!st && st !== '') { coinTypeSel.disabled = true; return; }
+
+    const types = allCoinTypes
+      .filter(ct => ct.category === cat && (ct.subtype || '') === st)
+      .sort((a,b) => a.name.localeCompare(b.name));
+
+    types.forEach(ct => {
+      const opt = document.createElement('option');
+      opt.value = ct.name;
+      opt.textContent = ct.name;
+      coinTypeSel.appendChild(opt);
+    });
+
+    coinTypeSel.disabled = false;
+  }
+
+  function onCoinTypeChange() {
+    const name = document.getElementById('coinType').value;
+    clearAutofills();
+    if (!name) return;
+
+    const cat = document.getElementById('category').value;
+    const st  = document.getElementById('subtype').value;
+
+    // Match within the current category + subtype context (falls back to name-only)
+    const ct = allCoinTypes.find(c =>
+      c.name === name && c.category === cat && (c.subtype || '') === st
+    ) || allCoinTypes.find(c => c.name === name);
+
+    // Legal tender value comes from the denomination map
+    document.getElementById('legalTenderValue').value = subtypeToLTV(st);
+
+    if (ct) {
+      // Auto-fill specs straight from the cointypes master
+      document.getElementById('composition').value = ct.composition || '';
+      document.getElementById('diameter').value    = ct.diameter_mm || '';
+      document.getElementById('weight').value       = ct.weight_gr   || '';
+      // Pre-fill the type-level blurb; user can edit it as a per-coin override
+      document.getElementById('aboutCoin').value    = ct.blurb || '';
+      // Reference photo (loads from Storage if the image is there)
+      setRefPhoto(ct.ref_photo);
+      // REV5.b: auto-select Edge radio (blank/null leaves all unchecked)
+      if (ct.edge) {
+        const edgeRadio = document.querySelector('input[name="edge"][value="' + ct.edge + '"]');
+        if (edgeRadio) edgeRadio.checked = true;
+      }
+    }
+    lookupMintage();
+  }
+
+  // ---- REV5: Mintage auto-fill from mintages table ----
+  async function lookupMintage() {
+    const coinType = document.getElementById('coinType').value.trim();
+    const year     = document.getElementById('year').value.trim();
+    const mintRaw  = document.getElementById('mintMark').value;
+    const mintEl   = document.getElementById('mintage');
+
+    // Parse just the code before " - " (e.g. "P - Philadelphia" -> "P")
+    // No mint mark selected = Philadelphia by convention
+    const mark = mintRaw ? (mintRaw.split(' - ')[0].trim() || 'P') : 'P';
+
+    // Need all three to look up
+    if (!coinType || !year || !mark) {
+      mintEl.value = '';
+      return;
+    }
+
+    try {
+      const params = new URLSearchParams({
+        cointypename: 'eq.' + coinType,
+        year:         'eq.' + year,
+        mintmark:     'eq.' + mark,
+        select:       'mintagenumber'
+      });
+      const res  = await fetch(`${SUPABASE_URL}/rest/v1/mintages?${params}`, {
+        headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY }
+      });
+      const rows = await res.json();
+      if (rows.length && rows[0].mintagenumber != null) {
+        mintEl.value = rows[0].mintagenumber.toLocaleString();
+      } else {
+        mintEl.value = '';
+      }
+    } catch (e) {
+      mintEl.value = '';
+    }
+  }
+
+  function setRefPhoto(filename) {
+    const img = document.getElementById('refPhotoImg');
+    const ph  = document.getElementById('refPhotoPlaceholder');
+    if (!filename) {
+      img.style.display = 'none';
+      img.removeAttribute('src');
+      ph.style.display = 'block';
+      ph.textContent = 'No reference image';
+      return;
+    }
+    // Show the image once it loads; if it's not uploaded yet, show the expected filename
+    img.onload  = () => { img.style.display = 'block'; ph.style.display = 'none'; };
+    img.onerror = () => { img.style.display = 'none'; ph.style.display = 'block'; ph.textContent = filename; };
+    img.src = `${SUPABASE_URL}/storage/v1/object/public/${REF_PHOTO_BUCKET}/${encodeURIComponent(filename)}`;
+  }
+
+  function subtypeToLTV(subtype) {
+    const map = {
+      'Half Cent': '$0.005', 'Large Cent': '$0.01', 'Small Cent': '$0.01',
+      'Two Cent': '$0.02', 'Three Cent': '$0.03', 'Half Dime': '$0.05',
+      'Nickel': '$0.05', 'Dime': '$0.10', 'Quarter': '$0.25',
+      'Half Dollar': '$0.50', 'Dollar': '$1.00', '5 Dollar': '$5.00'
+    };
+    return map[subtype] || '';
+  }
+
+  function clearAutofills() {
+    ['legalTenderValue','mintage','diameter','weight','composition','aboutCoin'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.querySelectorAll('input[name="edge"]').forEach(r => r.checked = false);
+    setRefPhoto(null);
+  }
+
+  function previewPhoto(input, imgId) {
+    const img = document.getElementById(imgId);
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        img.src = e.target.result;
+        img.style.display = 'block';
+        img.previousElementSibling && (img.previousElementSibling.style.display = 'none');
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  function newRecord() {
+    // Reset form
+    document.getElementById('category').value = '';
+    document.getElementById('subtype').innerHTML = '<option value="">— Select Category first —</option>';
+    document.getElementById('subtype').disabled = true;
+    document.getElementById('coinType').innerHTML = '<option value="">— Select Subcategory first —</option>';
+    document.getElementById('coinType').disabled = true;
+    clearAutofills();
+    ['variety','year','notes','aboutCoin','certNo','priceEach','totalPaid','currentValue','purchasedFrom','sellerDetail','coinId'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('qty').value = '1';
+    document.getElementById('grade').value = '';
+    document.getElementById('certAgency').value = '';
+    document.getElementById('mintMark').value = '';
+    document.getElementById('location').value = '';
+    document.getElementById('purchaseDate').value = '';
+    document.querySelectorAll('.addnew-box').forEach(b => b.style.display = 'none');
+    setStatus('New record', '');
+    window.scrollTo(0, 0);
+  }
+
+  // ---- REV4.c: Save -> INSERT into CoinCatalog ----
+  function gatherRecord() {
+    // trimmed text, or null if empty
+    const t = id => { const x = (document.getElementById(id).value || '').trim(); return x === '' ? null : x; };
+    // numeric, or null if not a number
+    const num = id => { const n = parseFloat(document.getElementById(id).value); return isNaN(n) ? null : n; };
+    const edgeEl = document.querySelector('input[name="edge"]:checked');
+
+    // Look up the selected coin type so we can store its reference-photo filename
+    const ctName = (document.getElementById('coinType').value || '').trim();
+    const cat    = (document.getElementById('category').value || '').trim();
+    const st     = (document.getElementById('subtype').value || '').trim();
+    const ctRow  = allCoinTypes.find(c => c.name === ctName && c.category === cat && (c.subtype || '') === st)
+                || allCoinTypes.find(c => c.name === ctName);
+
+    // CoinCatalog has no Seller-Detail column yet, so fold detail into PurchasedFrom (ASCII hyphen only)
+    const seller = t('purchasedFrom');
+    const detail = t('sellerDetail');
+    const purchasedFrom = detail ? (seller ? seller + ' - ' + detail : detail) : seller;
+
+    return {
+      CoinID:           t('coinId'),
+      gCategory:        t('category'),
+      gSubtype:         t('subtype'),
+      CoinTypeName:     t('coinType'),
+      Year:             t('year'),
+      MintMark:         t('mintMark'),
+      Mintage:          t('mintage'),
+      Composition:      t('composition'),
+      Diameter_mm:      t('diameter'),
+      Weight_gr:        t('weight'),
+      Edge:             edgeEl ? edgeEl.value : null,
+      LegalTenderValue: t('legalTenderValue'),
+      Grade:            t('grade'),
+      CertificationNo:  t('certNo'),
+      CertAgency:       t('certAgency'),
+      PricePaid:        num('totalPaid'),
+      CurrentValue:     num('currentValue'),
+      Location:         t('location'),
+      Variety:          t('variety'),
+      AboutThisCoin:    t('aboutCoin'),
+      Notes:            t('notes'),
+      ReferencePhoto:   ctRow ? (ctRow.ref_photo || null) : null,
+      PurchaseDate:     t('purchaseDate'),
+      PurchasedFrom:    purchasedFrom
+    };
+  }
+
+  async function saveRecord() {
+    const rec = gatherRecord();
+
+    // Minimal validation: the four * (required) fields
+    const missing = [];
+    if (!rec.CoinID)       missing.push('Coin ID');
+    if (!rec.gCategory)    missing.push('Category');
+    if (!rec.CoinTypeName) missing.push('Coin Type');
+    if (!rec.Year)         missing.push('Year');
+    if (missing.length) {
+      setStatus('Missing required: ' + missing.join(', '), 'err');
+      return;
+    }
+
+    setStatus('Saving…', '');
+    try {
+      const rows  = await sbInsert('CoinCatalog', rec);
+      const newId = (Array.isArray(rows) && rows[0]) ? rows[0].id : '';
+      setStatus('Saved \u2713  (record #' + newId + ')', 'ok');
+    } catch (e) {
+      setStatus('Save failed \u2014 ' + e.message, 'err');
+    }
+  }
+
+  // ---- REV8: Find by Coin ID ----
+  function findByCoinId() {
+    const searchId = (document.getElementById('coinId').value || '').trim();
+    if (!searchId) { setStatus('Enter a Coin ID to search', ''); return; }
+    
+    // Case-insensitive search
+    const found = allRecords.findIndex(r => 
+      (r.CoinID || '').toLowerCase() === searchId.toLowerCase()
+    );
+    
+    if (found >= 0) {
+      loadRecord(found);
+      document.getElementById('coinId').value = allRecords[found].CoinID;
+      document.getElementById('coinId').value = ''; // Clear search field
+      setStatus('Record found ✓', 'ok');
+    } else {
+      setStatus('Record "' + searchId + '" not found', 'err');
+      document.getElementById('coinId').value = ''; // Clear search field
+    }
+  }
+
+  // ---- REV5.d: Hamburger menu + Tools ----
+  function toggleToolsMenu() {
+    const dd = document.getElementById('toolsDropdown');
+    dd.classList.toggle('open');
+  }
+
+  // Close dropdown if user clicks anywhere outside it
+  document.addEventListener('click', e => {
+    const wrap = document.getElementById('hamburgerWrap');
+    if (wrap && !wrap.contains(e.target)) {
+      document.getElementById('toolsDropdown').classList.remove('open');
+    }
+  });
+
+  function openTool(toolName) {
+    document.getElementById('toolsDropdown').classList.remove('open');
+    if (toolName === 'manageValueLists') openManageValueLists();
+    if (toolName === 'legend') openLegendModal();
+  }
+
+  function closeToolsModal() {
+    document.getElementById('toolsModalOverlay').classList.remove('open');
+    document.getElementById('toolsModalBody').innerHTML = '';
+  }
+
+  // ---- REV5.e: Legend modal ----
+  function openLegendModal() {
+    const overlay = document.getElementById('legendModalOverlay');
+    if (!overlay) {
+      setStatus('Legend modal not found', 'err');
+      return;
+    }
+    overlay.classList.add('open');
+    populateLegendModal();
+  }
+
+  function closeLegendModal() {
+    const overlay = document.getElementById('legendModalOverlay');
+    if (overlay) overlay.classList.remove('open');
+  }
+
+  function populateLegendModal() {
+    const container = document.getElementById('legendModalBody');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const lists = [
+      { name: 'location', label: 'Location', data: valueLists.location || [] },
+      { name: 'cert_agency', label: 'Certifying Agency', data: valueLists.cert_agency || [] },
+      { name: 'seller', label: 'Seller', data: valueLists.seller || [] }
+    ];
+
+    lists.forEach(list => {
+      const section = document.createElement('div');
+      section.className = 'legend-section';
+
+      const title = document.createElement('div');
+      title.className = 'legend-section-title';
+      title.textContent = list.label;
+      section.appendChild(title);
+
+      const filteredData = list.data.filter(r => r.description && r.description !== '~skipped');
+      
+      if (filteredData.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'legend-entry-empty';
+        empty.textContent = 'No entries with descriptions yet.';
+        section.appendChild(empty);
+      } else {
+        filteredData.forEach(entry => {
+          const item = document.createElement('div');
+          item.className = 'legend-entry';
+          
+          const key = document.createElement('div');
+          key.className = 'legend-entry-key';
+          key.textContent = entry.value;
+          
+          const desc = document.createElement('div');
+          desc.className = 'legend-entry-desc';
+          desc.textContent = entry.description;
+          
+          item.appendChild(key);
+          item.appendChild(desc);
+          section.appendChild(item);
+        });
+      }
+
+      container.appendChild(section);
+    });
+  }
+
+  // ---- REV6: Grading Wizard ----
+  const WIZARD_QUESTIONS = [
+    { id: 'marks', label: 'Contact Marks & Surface Abrasions', hint: 'Rate how clean the surface is', weight: 0.35 },
+    { id: 'lustre', label: 'Lustre & Shine', hint: 'Original luster vs. dull appearance', weight: 0.10 },
+    { id: 'strike', label: 'Strike Quality', hint: 'Sharpness and definition of design', weight: 0.20 },
+    { id: 'appeal', label: 'Eye Appeal', hint: 'Overall attractiveness and visual quality', weight: 0.15 },
+    { id: 'preservation', label: 'Surface Preservation', hint: 'Overall condition and lack of wear', weight: 0.15 },
+    { id: 'cleaning', label: 'Cleaning, Toning & Damage', hint: 'Evidence of cleaning, artificial toning, or post-mint damage', weight: 0.05 }
+  ];
+
+  const GRADE_SCALE = [
+    { grade: 'MS-70', value: 100 }, { grade: 'MS-65', value: 95 }, { grade: 'MS-63', value: 90 },
+    { grade: 'MS-60', value: 85 }, { grade: 'AU-58', value: 80 }, { grade: 'AU-55', value: 75 },
+    { grade: 'AU-50', value: 70 }, { grade: 'XF-45', value: 60 }, { grade: 'XF-40', value: 55 },
+    { grade: 'VF-35', value: 50 }, { grade: 'VF-30', value: 45 }, { grade: 'VF-25', value: 40 },
+    { grade: 'VF-20', value: 35 }, { grade: 'F-15', value: 25 }, { grade: 'F-12', value: 20 },
+    { grade: 'VG-10', value: 15 }, { grade: 'G-6', value: 8 }, { grade: 'AG-3', value: 3 },
+    { grade: 'Damaged', value: 0 }
+  ];
+
+  function getGradeFromValue(val) {
+    if (val >= 100) return 'MS-70';
+    if (val >= 97.5) return 'MS-65';
+    if (val >= 92.5) return 'MS-63';
+    if (val >= 82.5) return 'MS-60';
+    if (val >= 77.5) return 'AU-58';
+    if (val >= 72.5) return 'AU-55';
+    if (val >= 65) return 'AU-50';
+    if (val >= 57.5) return 'XF-45';
+    if (val >= 52.5) return 'XF-40';
+    if (val >= 47.5) return 'VF-35';
+    if (val >= 42.5) return 'VF-30';
+    if (val >= 37.5) return 'VF-25';
+    if (val >= 30) return 'VF-20';
+    if (val >= 22.5) return 'F-15';
+    if (val >= 17.5) return 'F-12';
+    if (val >= 11.5) return 'VG-10';
+    if (val >= 5.5) return 'G-6';
+    if (val >= 1.5) return 'AG-3';
+    return 'Damaged';
+  }
+
+  function getGradeRange(val) {
+    const lower = getGradeFromValue(val - 2);
+    const upper = getGradeFromValue(val + 2);
+    return lower === upper ? upper : lower + ' to ' + upper;
+  }
+
+  function getGradeValue(grade) {
+    const match = GRADE_SCALE.find(g => g.grade === grade);
+    return match ? match.value : 0;
+  }
+
+  function getCoinTypeName() {
+    return (document.getElementById('coinType').value || '').trim();
+  }
+
+  function getCallout(questionId) {
+    const coinType = getCoinTypeName();
+    const callouts = {
+      marks: {
+        Morgan: 'Morgans are notorious for bagmarks—check cheeks, nose, and breast areas carefully.',
+        'Peace Dollar': 'Peace dollars often show marks on the face. Look closely at high points.',
+        'Washington Quarter': 'Check obverse cheeks and eagle wings for typical handling marks.',
+        'Buffalo Nickel': 'Buffalo nickels wear quickly on the buffalo\'s back and the Indian\'s hair.',
+        'Lincoln Cent': 'Contact marks on wheat-ear cents are very visible; examine carefully.',
+        'Mercury Dime': 'Fasces and Mercury\'s wings are common damage spots on dimes.',
+        'Standing Liberty Quarter': 'Liberty\'s right knee and shield are vulnerable to handling marks.'
+      },
+      strike: {
+        Morgan: 'Check hair details on obverse and feathers on reverse eagle.',
+        'Peace Dollar': 'Look for full detail in eagle\'s wing and feathers.',
+        'Washington Quarter': 'Profile details and eagle should be sharp and well-defined.',
+        'Buffalo Nickel': 'Buffalo horns and Indian features should be clear and sharp.'
+      },
+      cleaning: {
+        Morgan: 'Cleaned Morgans are common—look for hairlines, uneven toning, or glazed surface.',
+        'Peace Dollar': 'Artificial toning on Peace dollars is frequent; assess originality.',
+        General: 'Cleaning and artificial toning significantly impact grade and value.'
+      }
+    };
+
+    const qCallouts = callouts[questionId];
+    if (!qCallouts) return '';
+    return qCallouts[coinType] || qCallouts.General || '';
+  }
+
+  function openWizard() {
+    const overlay = document.getElementById('wizardModalOverlay');
+    if (!overlay) { setStatus('Wizard modal not found', 'err'); return; }
+    overlay.classList.add('open');
+    populateWizard();
+  }
+
+  function closeWizard() {
+    const overlay = document.getElementById('wizardModalOverlay');
+    if (overlay) overlay.classList.remove('open');
+  }
+
+  function populateWizard() {
+    const body = document.getElementById('wizardModalBody');
+    body.innerHTML = '';
+
+    // Questions
+    const qDiv = document.createElement('div');
+    qDiv.id = 'wizardQuestions';
+    WIZARD_QUESTIONS.forEach((q, idx) => {
+      const qEl = document.createElement('div');
+      qEl.className = 'wizard-question';
+      const callout = getCallout(q.id);
+      qEl.innerHTML =
+        '<label class="wizard-question-label">' + (idx + 1) + '. ' + q.label + '</label>' +
+        '<span class="wizard-question-hint">' + q.hint + '</span>' +
+        '<div class="wizard-slider-container">' +
+        '  <input type="range" min="1" max="5" value="3" class="wizard-slider" id="slider-' + q.id + '" data-question="' + q.id + '">' +
+        '  <span class="wizard-slider-value" id="value-' + q.id + '">3</span>' +
+        '</div>' +
+        '<div class="wizard-slider-scale">' +
+        '  <span>1 = Poor</span>' +
+        '  <span>3 = Fair</span>' +
+        '  <span>5 = Excellent</span>' +
+        '</div>' +
+        (callout ? '<div class="wizard-callout">' + callout + '</div>' : '');
+      qDiv.appendChild(qEl);
+    });
+    body.appendChild(qDiv);
+
+    // Wire sliders
+    document.querySelectorAll('.wizard-slider').forEach(slider => {
+      slider.addEventListener('input', e => {
+        const qId = e.target.dataset.question;
+        document.getElementById('value-' + qId).textContent = e.target.value;
+      });
+    });
+
+    // PCGS section
+    const pcgsDiv = document.createElement('div');
+    pcgsDiv.className = 'wizard-pcgs-section';
+    pcgsDiv.innerHTML =
+      '<div class="wizard-pcgs-title">Compare on PCGS Photograde</div>' +
+      '<a href="https://www.pcgs.com/photograde" target="_blank" class="wizard-pcgs-link">🔗 Open PCGS Photograde</a>' +
+      '<label style="display:block; font-size:0.75rem; color:#ccc; text-transform:uppercase; margin-top:12px; margin-bottom:4px;">Your PCGS Grade Estimate</label>' +
+      '<select id="wizardPcgsGrade" class="wizard-pcgs-dropdown">' +
+      '  <option value="">— Select —</option>' +
+      GRADE_SCALE.map(g => '<option value="' + g.grade + '">' + g.grade + '</option>').join('') +
+      '</select>';
+    body.appendChild(pcgsDiv);
+
+    // Results section (hidden initially)
+    const resDiv = document.createElement('div');
+    resDiv.id = 'wizardResults';
+    resDiv.className = 'wizard-results';
+    body.appendChild(resDiv);
+  }
+
+  function calculateWizardGrade() {
+    const results = document.getElementById('wizardResults');
+    if (!results) return;
+
+    // Aggregate wizard scores
+    let totalScore = 0;
+    let totalWeight = 0;
+    WIZARD_QUESTIONS.forEach(q => {
+      const slider = document.getElementById('slider-' + q.id);
+      const val = parseFloat(slider.value);
+      const scaled = val / 5 * 100; // Convert 1-5 to 0-100
+      totalScore += scaled * q.weight;
+      totalWeight += q.weight;
+    });
+    const wizardValue = totalScore / totalWeight;
+    const wizardGrade = getGradeFromValue(wizardValue);
+    const wizardRange = getGradeRange(wizardValue);
+
+    // PCGS grade
+    const pcgsGrade = document.getElementById('wizardPcgsGrade').value;
+    const pcgsValue = pcgsGrade ? getGradeValue(pcgsGrade) : null;
+
+    // Aggregate
+    let aggregateValue, aggregateGrade, warning = '';
+    if (pcgsValue !== null) {
+      aggregateValue = (wizardValue + pcgsValue) / 2;
+      aggregateGrade = getGradeFromValue(aggregateValue);
+      const wizardNum = getGradeValue(wizardGrade);
+      const diff = Math.abs(getGradeValue(wizardGrade) - getGradeValue(pcgsGrade));
+      if (diff >= 20) { // 2 grades = ~20 points
+        warning = '⚠️ Large disparity detected between your checklist and PCGS estimate. Results may not be accurate.';
+      }
+    } else {
+      aggregateValue = wizardValue;
+      aggregateGrade = wizardGrade;
+      warning = 'ⓘ Enter a PCGS Photograde estimate for a more accurate aggregate.';
+    }
+
+    // Display results
+    results.innerHTML =
+      '<div class="wizard-results-title">Results</div>' +
+      '<div class="wizard-result-row">' +
+      '  <span class="wizard-result-label">Your Checklist Estimate:</span>' +
+      '  <span class="wizard-result-value">' + wizardGrade + '</span>' +
+      '</div>' +
+      (pcgsGrade ? '<div class="wizard-result-row">' +
+      '  <span class="wizard-result-label">PCGS Photograde Pick:</span>' +
+      '  <span class="wizard-result-value">' + pcgsGrade + '</span>' +
+      '</div>' : '') +
+      '<div class="wizard-result-row">' +
+      '  <span class="wizard-result-label">AI Aggregate Estimate:</span>' +
+      '  <span class="wizard-result-value">' + aggregateGrade + '</span>' +
+      '</div>' +
+      (warning ? '<div class="wizard-warning"><div class="wizard-warning-title">Note</div>' + warning + '</div>' : '');
+    results.classList.add('show');
+  }
+
+  function applyWizardGradeToField() {
+    const results = document.getElementById('wizardResults');
+    if (!results.classList.contains('show')) { setStatus('Please calculate first', 'err'); return; }
+    const aggregateText = results.querySelector('.wizard-result-value:last-of-type').textContent;
+    document.getElementById('estimatedGrade').value = aggregateText;
+    setStatus('Grade applied to Estimated Grade field', 'ok');
+    closeWizard();
+  }
+
+  // ---- REV7: Navigation & Record Management ----
+  let allRecords = [];
+  let currentRecordIndex = -1;
+  let currentRecord = null;
+  let isDirty = false;
+
+  async function loadAllRecords() {
+    try {
+      setStatus('Loading records...', 'info');
+      let all = [];
+      let from = 0;
+      const batchSize = 1000;
+      while (true) {
+        const batch = await fetch(`${SUPABASE_URL}/rest/v1/CoinCatalog?order=CoinID.asc`, {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Range': `${from}-${from + batchSize - 1}`,
+            'Range-Unit': 'items',
+            'Prefer': 'count=none'
+          }
+        }).then(r => r.json());
+        if (!batch || batch.length === 0) break;
+        all = all.concat(batch);
+        if (batch.length < batchSize) break;
+        from += batchSize;
+      }
+      allRecords = all;
+      setStatus(allRecords.length + ' records loaded', 'ok');
+      updateRecordCounter();
+    } catch(e) {
+      setStatus('Failed to load records', 'err');
+    }
+  }
+
+  async function showAllRecords() {
+    await loadAllRecords();
+    if (allRecords.length > 0) {
+      loadRecord(0);
+    }
+  }
+
+  function updateRecordCounter() {
+    const counter = document.getElementById('recordCounter');
+    if (!counter) return;
+    if (currentRecordIndex >= 0 && allRecords.length > 0) {
+      counter.textContent = 'Record ' + (currentRecordIndex + 1) + ' of ' + allRecords.length;
+    } else {
+      counter.textContent = allRecords.length + ' records';
+    }
+  }
+
+  function loadRecord(index) {
+    if (index < 0 || index >= allRecords.length) { setStatus('Record not found', 'err'); return; }
+    currentRecordIndex = index;
+    currentRecord = allRecords[index];
+    
+    // Populate form
+    document.getElementById('coinId').value = currentRecord.CoinID || '';
+    document.getElementById('category').value = currentRecord.gCategory || '';
+    onCategoryChange();
+    document.getElementById('subtype').value = currentRecord.gSubtype || '';
+    onSubtypeChange();
+    document.getElementById('coinType').value = currentRecord.CoinTypeName || '';
+    onCoinTypeChange();
+    document.getElementById('year').value = currentRecord.Year || '';
+    // Map stored mint mark code to full dropdown option text
+    const mintMarkMap = {
+      'P': 'P - Philadelphia',
+      'D': 'D - Denver',
+      'S': 'S - San Francisco',
+      'O': 'O - New Orleans',
+      'CC': 'CC - Carson City',
+      'W': 'W - West Point',
+      'C': 'C - Charlotte'
+    };
+    const rawMint = currentRecord.MintMark || 'P';
+    document.getElementById('mintMark').value = mintMarkMap[rawMint] || rawMint || 'P - Philadelphia';
+    lookupMintage();
+    document.getElementById('composition').value = currentRecord.Composition || '';
+    document.getElementById('diameter').value = currentRecord.Diameter_mm || '';
+    document.getElementById('weight').value = currentRecord.Weight_gr || '';
+    if (currentRecord.Edge) {
+      document.querySelector('input[name="edge"][value="' + currentRecord.Edge + '"]').checked = true;
+    }
+    document.getElementById('legalTenderValue').value = currentRecord.LegalTenderValue || '';
+    document.getElementById('grade').value = currentRecord.Grade || '';
+    document.getElementById('certNo').value = currentRecord.CertificationNo || '';
+    document.getElementById('certAgency').value = currentRecord.CertAgency || '';
+    document.getElementById('location').value = currentRecord.Location || '';
+    document.getElementById('variety').value = currentRecord.Variety || '';
+    document.getElementById('aboutCoin').value = currentRecord.AboutThisCoin || '';
+    document.getElementById('notes').value = currentRecord.Notes || '';
+    document.getElementById('priceEach').value = currentRecord.PricePaid ? (currentRecord.PricePaid / (currentRecord.Qty || 1)).toFixed(2) : '';
+    document.getElementById('totalPaid').value = currentRecord.PricePaid ? parseFloat(currentRecord.PricePaid).toFixed(2) : '';
+    document.getElementById('currentValue').value = currentRecord.CurrentValue || '';
+    document.getElementById('purchaseDate').value = currentRecord.PurchaseDate || '';
+    document.getElementById('purchasedFrom').value = (currentRecord.PurchasedFrom || '').split(' - ')[0] || '';
+    document.getElementById('sellerDetail').value = (currentRecord.PurchasedFrom || '').split(' - ')[1] || '';
+    
+    updateRecordCounter();
+    isDirty = false;
+    setStatus('Record ' + currentRecord.CoinID + ' loaded', 'ok');
+  }
+
+  function firstRecord() {
+    if (allRecords.length === 0) { setStatus('No records', ''); return; }
+    loadRecord(0);
+  }
+
+  function prevRecord() {
+    if (currentRecordIndex > 0) loadRecord(currentRecordIndex - 1);
+    else setStatus('Already at first record', '');
+  }
+
+  function nextRecord() {
+    if (currentRecordIndex < allRecords.length - 1) loadRecord(currentRecordIndex + 1);
+    else setStatus('Already at last record', '');
+  }
+
+  function lastRecord() {
+    if (allRecords.length === 0) { setStatus('No records', ''); return; }
+    loadRecord(allRecords.length - 1);
+  }
+
+  function openDuplicateModal() {
+    if (!currentRecord) { setStatus('No record to duplicate', 'err'); return; }
+    document.getElementById('navModalOverlay').classList.add('open');
+    document.getElementById('navModalTitle').textContent = 'Duplicate Record';
+    document.getElementById('navModalMessage').textContent = 'Enter a new Coin ID for this duplicate:';
+    document.getElementById('navModalInput').value = '';
+    document.getElementById('navModalInput').placeholder = 'New Coin ID (required)';
+    document.getElementById('navModalInput').focus();
+    document.getElementById('navModalAction').textContent = 'Create Duplicate';
+    document.getElementById('navModalAction').className = 'btn btn-primary';
+    document.getElementById('navModalAction').onclick = function() { confirmDuplicate(); };
+  }
+
+  function confirmDuplicate() {
+    const newId = document.getElementById('navModalInput').value.trim();
+    if (!newId) { setStatus('Coin ID is required', 'err'); return; }
+    document.getElementById('navModalOverlay').classList.remove('open');
+    duplicateRecord(newId);
+  }
+
+  async function duplicateRecord(newCoinId) {
+    try {
+      const dup = { ...currentRecord };
+      dup.CoinID = newCoinId;
+      delete dup.id;
+      const rows = await sbInsert('CoinCatalog', dup);
+      const newId = (Array.isArray(rows) && rows[0]) ? rows[0].id : null;
+      await loadAllRecords();
+      const newIndex = allRecords.findIndex(r => r.CoinID === newCoinId);
+      if (newIndex >= 0) loadRecord(newIndex);
+      setStatus('Record duplicated as ' + newCoinId, 'ok');
+    } catch(e) {
+      setStatus('Duplicate failed: ' + e.message, 'err');
+    }
+  }
+
+  function openDeleteModal() {
+    if (!currentRecord) { setStatus('No record to delete', 'err'); return; }
+    document.getElementById('navModalOverlay').classList.add('open');
+    document.getElementById('navModalTitle').textContent = 'Delete Record';
+    document.getElementById('navModalMessage').textContent = 'Delete record ' + currentRecord.CoinID + '? This cannot be undone.';
+    document.getElementById('navModalInput').style.display = 'none';
+    document.getElementById('navModalAction').textContent = 'Delete';
+    document.getElementById('navModalAction').className = 'btn btn-danger';
+    document.getElementById('navModalAction').onclick = function() { confirmDelete(); };
+  }
+
+  function confirmDelete() {
+    document.getElementById('navModalOverlay').classList.remove('open');
+    deleteRecord();
+  }
+
+  async function deleteRecord() {
+    if (!currentRecord || !currentRecord.id) { setStatus('No record ID to delete', 'err'); return; }
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/CoinCatalog?id=eq.${currentRecord.id}`, {
+        method: 'DELETE',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+      });
+      if (!res.ok) throw new Error('Delete failed: HTTP ' + res.status);
+      const wasIndex = currentRecordIndex;
+      await loadAllRecords();
+      if (allRecords.length > 0) {
+        loadRecord(Math.min(wasIndex, allRecords.length - 1));
+      } else {
+        newRecord();
+      }
+      setStatus('Record deleted ✓', 'ok');
+    } catch(e) {
+      setStatus('Delete error: ' + e.message, 'err');
+    }
+  }
+
+  function closeNavModal() {
+    document.getElementById('navModalOverlay').classList.remove('open');
+    document.getElementById('navModalInput').style.display = 'block';
+  }
+
+  // ---- Auto-save on blur ----
+  function attachAutoSaveListeners() {
+    const autoSaveFields = ['category', 'subtype', 'coinType', 'year', 'mintMark', 'grade', 'certAgency', 'location'];
+    autoSaveFields.forEach(fieldId => {
+      const field = document.getElementById(fieldId);
+      if (field) {
+        field.addEventListener('blur', () => {
+          if (currentRecord) autoSaveField(fieldId);
+        });
+      }
+    });
+  }
+
+  async function autoSaveField(fieldId) {
+    if (!currentRecord || !currentRecord.id) return;
+    try {
+      const fieldValue = document.getElementById(fieldId).value;
+      const updateData = {};
+      const fieldMap = {
+        category: 'gCategory',
+        subtype: 'gSubtype',
+        coinType: 'CoinTypeName',
+        year: 'Year',
+        mintMark: 'MintMark',
+        grade: 'Grade',
+        certAgency: 'CertAgency',
+        location: 'Location'
+      };
+      updateData[fieldMap[fieldId]] = fieldValue || null;
+      await sbUpdate('CoinCatalog', currentRecord.id, updateData);
+      currentRecord[fieldMap[fieldId]] = fieldValue;
+      setStatus('✓ Auto-saved', 'ok');
+    } catch(e) {
+      // Silent fail for auto-save, user can manually save if needed
+    }
+  }
+
+  // ---- Manage Value Lists ----
+  const VL_LABELS = {
+    location:     'Location',
+    cert_agency:  'Certifying Agency',
+    seller:       'Seller'
+  };
+
+  function openManageValueLists() {
+    const overlay = document.getElementById('toolsModalOverlay');
+    const body    = document.getElementById('toolsModalBody');
+    body.innerHTML = `
+      <div class="field">
+        <label>Select a Value List</label>
+        <select id="vlPickList" onchange="renderVLManager(this.value)">
+          <option value="">— Choose a list —</option>
+          ${Object.entries(VL_LABELS).map(([k,v]) => `<option value="${k}">${v}</option>`).join('')}
+        </select>
+      </div>
+      <div id="vlManagerContent"></div>`;
+    overlay.classList.add('open');
+  }
+
+  function renderVLManager(listName) {
+    const content = document.getElementById('vlManagerContent');
+    if (!listName) { content.innerHTML = ''; return; }
+    const items = valueLists[listName] || [];
+    if (!items.length) {
+      content.innerHTML = '<p style="color:var(--text-muted);font-size:0.88rem;">This list is empty.</p>';
+      return;
+    }
+    const rows = items.map(r => `
+      <div class="vl-item" id="vl-row-${r.id}">
+        <span class="vl-item-label">${r.value}</span>
+        ${r.description && r.description !== '~skipped' ? `<span class="vl-item-desc">${r.description}</span>` : '<span class="vl-item-desc" style="color:#aaa;">(no description)</span>'}
+        <button class="vl-item-edit" onclick="openEditDescriptionModal('${listName}', ${r.id}, '${r.value.replace(/'/g,"\\'")}', '${(r.description || '').replace(/'/g,"\\'")}')">✎ Edit</button>
+        <button class="vl-item-del" onclick="confirmDeleteValue('${listName}', '${r.value.replace(/'/g,"\\'")}', ${r.id})">&#128465; Delete</button>
+      </div>`).join('');
+    content.innerHTML = `
+      ${rows}
+      <div class="vl-clear-wrap">
+        <button class="btn btn-danger" onclick="confirmClearAll('${listName}')">&#9888; Clear All Values</button>
+      </div>
+      <div id="vlConfirmBox"></div>`;
+  }
+
+  function confirmDeleteValue(listName, value, id) {
+    document.getElementById('vlConfirmBox').innerHTML = `
+      <div class="vl-confirm">
+        <div class="vl-confirm-msg">Delete <strong>"${value}"</strong> from ${VL_LABELS[listName]}?<br>
+        <span style="color:#e74c3c;font-size:0.82rem;">This cannot be undone.</span></div>
+        <div class="vl-confirm-btns">
+          <button class="btn" onclick="document.getElementById('vlConfirmBox').innerHTML=''">Cancel</button>
+          <button class="btn btn-danger" onclick="executeDeleteValue(${id},'${listName}','${value.replace(/'/g,"\\'")}')">Yes, Delete It</button>
+        </div>
+      </div>`;
+  }
+
+  function confirmClearAll(listName) {
+    const count = (valueLists[listName] || []).length;
+    document.getElementById('vlConfirmBox').innerHTML = `
+      <div class="vl-confirm">
+        <div class="vl-confirm-msg">Delete <strong>all ${count} values</strong> from ${VL_LABELS[listName]}?<br>
+        <span style="color:#e74c3c;font-size:0.82rem;">This cannot be undone. All entries will be permanently removed.</span></div>
+        <div class="vl-confirm-btns">
+          <button class="btn" onclick="document.getElementById('vlConfirmBox').innerHTML=''">Cancel</button>
+          <button class="btn btn-danger" onclick="executeClearAll('${listName}')">Yes, Delete All</button>
+        </div>
+      </div>`;
+  }
+
+  async function executeDeleteValue(id, listName, value) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/value_lists?id=eq.${id}`, {
+        method: 'DELETE',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+      });
+      if (!res.ok) throw new Error('Delete failed: ' + res.status);
+      valueLists[listName] = (valueLists[listName] || []).filter(r => r.id !== id);
+      renderValueListSelect(valueLists[listName].length ? document.getElementById('vlPickList').value : 'location', listName);
+      VALUE_LIST_SELECTS.forEach(cfg => { if (cfg.list === listName) renderValueListSelect(cfg.id, cfg.list); });
+      setStatus('Deleted "' + value + '" from ' + VL_LABELS[listName], 'ok');
+      renderVLManager(listName);
+    } catch(e) {
+      setStatus('Delete failed — ' + e.message, 'err');
+    }
+  }
+
+  // ---- REV8.b: Edit Description ----
+  function openEditDescriptionModal(listName, id, value, currentDesc) {
+    const modal = document.getElementById('descModal');
+    const input = document.getElementById('descModalInput');
+    const saveBtn = document.getElementById('descModalSave');
+    const skipBtn = document.getElementById('descModalSkip');
+
+    document.getElementById('descModalValue').textContent = '\u201c' + value + '\u201d';
+    const hints = {
+      location:    'e.g. Whitman Quarters Album #2, Safe B',
+      cert_agency: 'e.g. Professional Coin Grading Service',
+      seller:      'e.g. Trusted eBay seller for raw coins'
+    };
+    input.placeholder = hints[listName] || 'e.g. add a description…';
+    input.value = currentDesc && currentDesc !== '~skipped' ? currentDesc : '';
+    modal.style.display = 'flex';
+    setTimeout(() => input.focus(), 50);
+
+    const ac = new AbortController();
+    const sig = { signal: ac.signal };
+
+    function close() { modal.style.display = 'none'; ac.abort(); }
+
+    saveBtn.addEventListener('click', async () => {
+      const desc = input.value.trim();
+      if (!desc) { input.focus(); return; }
+      try {
+        await sbUpdate('value_lists', id, { description: desc });
+        const entry = (valueLists[listName] || []).find(r => r.id === id);
+        if (entry) entry.description = desc;
+        renderValueListSelect(document.getElementById('vlPickList').value, listName);
+        VALUE_LIST_SELECTS.forEach(cfg => { if (cfg.list === listName) renderValueListSelect(cfg.id, cfg.list); });
+        setStatus('Description saved for \u201c' + value + '\u201d', 'ok');
+      } catch(e) { setStatus('Could not save description', 'err'); }
+      close();
+      renderVLManager(listName);
+    }, sig);
+
+    skipBtn.addEventListener('click', () => {
+      close();
+      renderVLManager(listName);
+    }, sig);
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter')  { e.preventDefault(); saveBtn.click(); }
+      if (e.key === 'Escape') close();
+    }, sig);
+
+    modal.addEventListener('click', e => { if (e.target === modal) close(); }, sig);
+  }
+
+  async function executeClearAll(listName) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/value_lists?list_name=eq.${listName}`, {
+        method: 'DELETE',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+      });
+      if (!res.ok) throw new Error('Clear failed: ' + res.status);
+      valueLists[listName] = [];
+      VALUE_LIST_SELECTS.forEach(cfg => { if (cfg.list === listName) renderValueListSelect(cfg.id, cfg.list); });
+      setStatus('Cleared all values from ' + VL_LABELS[listName], 'ok');
+      renderVLManager(listName);
+    } catch(e) {
+      setStatus('Clear failed — ' + e.message, 'err');
+    }
+  }
+  async function loadValueLists() {
+    const rows = await sbFetch('value_lists?select=id,list_name,value,description&order=value');
+    valueLists = {};
+    rows.forEach(r => { (valueLists[r.list_name] = valueLists[r.list_name] || []).push(r); });
+    VALUE_LIST_SELECTS.forEach(cfg => renderValueListSelect(cfg.id, cfg.list));
+    // REV5.c: gentle nudge if any values have no description yet (null = never decided)
+    const undescribed = rows.filter(r => r.description === null);
+    if (undescribed.length) {
+      setStatus('\uD83D\uDCA1 ' + undescribed.length + ' value' + (undescribed.length > 1 ? 's have' : ' has') + ' no description yet \u2014 use Tools to add them.', '');
+    }
+  }
+
+  // ---- REV5.c (patch): show description below the select when a value is chosen ----
+  function updateLegendTip(selectId, listName) {
+    const tip = document.getElementById(selectId + '-tip');
+    if (!tip) return;
+    const sel = document.getElementById(selectId);
+    const val = sel ? sel.value : '';
+    const entry = (valueLists[listName] || []).find(r => r.value === val);
+    const desc = entry && entry.description && entry.description !== '~skipped' ? entry.description : '';
+    tip.textContent = desc ? '\u24D8 ' + desc : '';
+  }
+
+  function renderValueListSelect(selectId, listName) {
+    const sel = document.getElementById(selectId);
+    const current = sel.value;
+    const placeholder = sel.querySelector('option[value=""]');
+    sel.innerHTML = '';
+    if (placeholder) sel.appendChild(placeholder);
+    (valueLists[listName] || []).forEach(r => {
+      const o = document.createElement('option');
+      o.value = r.value;
+      o.textContent = r.value;
+      if (r.description && r.description !== '~skipped') o.title = r.description; // legend tooltip
+      sel.appendChild(o);
+    });
+    const add = document.createElement('option');
+    add.value = '__ADD__';
+    add.textContent = '+ Add new…';
+    sel.appendChild(add);
+    if (current && current !== '__ADD__') sel.value = current;
+  }
+
+  function attachAddNewUI(selectId, listName) {
+    const sel = document.getElementById(selectId);
+    const box = document.createElement('div');
+    box.className = 'addnew-box';
+    box.style.display = 'none';
+    box.innerHTML =
+      '<input type="text" placeholder="Type new value…">' +
+      '<button type="button" class="btn btn-primary">Save</button>' +
+      '<button type="button" class="btn">Cancel</button>';
+    sel.parentNode.insertBefore(box, sel.nextSibling);
+
+    const input = box.querySelector('input');
+    const [saveBtn, cancelBtn] = box.querySelectorAll('button');
+    let prev = sel.value;
+
+    sel.addEventListener('focus', () => { prev = sel.value; });
+    sel.addEventListener('change', () => {
+      if (sel.value === '__ADD__') { box.style.display = 'flex'; input.focus(); }
+      else { prev = sel.value; box.style.display = 'none'; updateLegendTip(selectId, listName); }
+    });
+    cancelBtn.addEventListener('click', () => {
+      sel.value = prev; box.style.display = 'none'; input.value = '';
+    });
+    saveBtn.addEventListener('click', async () => {
+      const val = input.value.trim();
+      if (!val) { input.focus(); return; }
+      try {
+        const rows  = await sbInsert('value_lists', { list_name: listName, value: val });
+        const newId = (Array.isArray(rows) && rows[0]) ? rows[0].id : null;
+        (valueLists[listName] = valueLists[listName] || []).push({ value: val, description: null });
+        valueLists[listName].sort((a, b) => a.value.localeCompare(b.value));
+        renderValueListSelect(selectId, listName);
+        sel.value = val; prev = val;
+        input.value = ''; box.style.display = 'none';
+        setStatus('Added "' + val + '"', 'ok');
+        // REV5.c: show description nudge (unless we couldn't get the row id)
+        if (newId) showDescriptionPrompt(val, listName, newId, selectId);
+      } catch (e) {
+        setStatus('Could not save value', 'err');
+      }
+    });
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); saveBtn.click(); }
+      if (e.key === 'Escape') { cancelBtn.click(); }
+    });
+  }
+
+  // ---- REV5.c: Description nudge popup ----
+  // Shows after a new value is added. Skip = saves '~skipped' so it never nudges again.
+  // Closing without clicking either = description stays null = nudge repeats next session.
+  function showDescriptionPrompt(val, listName, rowId, selectId) {
+    const modal  = document.getElementById('descModal');
+    const input  = document.getElementById('descModalInput');
+    const saveBtn = document.getElementById('descModalSave');
+    const skipBtn = document.getElementById('descModalSkip');
+
+    document.getElementById('descModalValue').textContent = '\u201c' + val + '\u201d';
+    const hints = {
+      location:    'e.g. Whitman Quarters Album #2, Safe B',
+      cert_agency: 'e.g. Professional Coin Grading Service',
+      seller:      'e.g. Trusted eBay seller for raw coins'
+    };
+    input.placeholder = hints[listName] || 'e.g. add a short description\u2026';
+    input.value = '';
+    modal.style.display = 'flex';
+    setTimeout(() => input.focus(), 50);
+
+    // AbortController cleans up all listeners when the modal closes
+    const ac  = new AbortController();
+    const sig = { signal: ac.signal };
+
+    function close() { modal.style.display = 'none'; ac.abort(); }
+
+    saveBtn.addEventListener('click', async () => {
+      const desc = input.value.trim();
+      if (!desc) { input.focus(); return; }
+      try {
+        await sbUpdate('value_lists', rowId, { description: desc });
+        const entry = (valueLists[listName] || []).find(r => r.value === val);
+        if (entry) entry.description = desc;
+        renderValueListSelect(selectId, listName);
+        setStatus('Description saved for \u201c' + val + '\u201d', 'ok');
+      } catch(e) { setStatus('Could not save description', 'err'); }
+      close();
+    }, sig);
+
+    skipBtn.addEventListener('click', async () => {
+      try {
+        await sbUpdate('value_lists', rowId, { description: '~skipped' });
+        const entry = (valueLists[listName] || []).find(r => r.value === val);
+        if (entry) entry.description = '~skipped';
+      } catch(e) { /* silent — skip is best-effort */ }
+      close();
+    }, sig);
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter')  { e.preventDefault(); saveBtn.click(); }
+      if (e.key === 'Escape') close();
+    }, sig);
+
+    // Click the dark overlay (outside the box) = close without deciding
+    modal.addEventListener('click', e => { if (e.target === modal) close(); }, sig);
+  }
+
+  // ---- REV5.c: Mint-Direct one-click grade ----
+  function setMintDirect() {
+    document.getElementById('grade').value = 'MS-63';
+    setStatus('Grade set to MS-63 (Mint-Direct)', 'ok');
+  }
+
+  // ---- REV4.a: Total Paid = Price Each x Quantity ----
+  function computeTotal() {
+    const each = parseFloat(document.getElementById('priceEach').value);
+    const qty  = parseInt(document.getElementById('qty').value, 10) || 1;
+    const total = document.getElementById('totalPaid');
+    total.value = (isNaN(each) || each === 0) ? '' : (each * qty).toFixed(2);
+  }
+
+  // ---- REV4.d: tidy a money field to 2 decimals on blur (e.g. "89." -> "89.00") ----
+  function formatMoney(input) {
+    const n = parseFloat(input.value);
+    input.value = isNaN(n) ? '' : n.toFixed(2);
+    computeTotal();
+  }
+
+  // INIT
+  (async () => {
+    await loadCategories();
+    await loadAllCoinTypes();
+    VALUE_LIST_SELECTS.forEach(cfg => attachAddNewUI(cfg.id, cfg.list));
+    await loadValueLists();
+    // REV5.c: wire legend tips on each value list select (after data is loaded)
+    VALUE_LIST_SELECTS.forEach(cfg => {
+      updateLegendTip(cfg.id, cfg.list);
+      document.getElementById(cfg.id).addEventListener('change', () => {
+        updateLegendTip(cfg.id, cfg.list);
+      });
+    });
+    // REV7: Load records and attach auto-save
+    await loadAllRecords();
+    attachAutoSaveListeners();
+  })();
+</script>
+  <!-- REV5.c: Description nudge modal -->
+  <div id="descModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:1000; align-items:center; justify-content:center; padding:16px;">
+    <div style="background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:24px; width:min(100%,380px); box-shadow:0 8px 32px rgba(0,0,0,0.4); color:#fff;">
+      <div style="font-size:1rem; font-weight:600; margin-bottom:6px; color:#fff;">What does <span id="descModalValue" style="color:#ffd700;"></span> mean?</div>
+      <div style="font-size:0.82rem; color:#f0f0f0; margin-bottom:14px;">Add a short description to build your legend — so you remember what this abbreviation means later. You can always edit it in Tools.</div>
+      <input type="text" id="descModalInput" style="width:100%; margin-bottom:14px;" placeholder="">
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button type="button" class="btn" id="descModalSkip">Skip</button>
+        <button type="button" class="btn btn-primary" id="descModalSave">Save Description</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REV5.d: Tools — Manage Value Lists modal -->
+  <div class="tools-modal-overlay" id="toolsModalOverlay">
+    <div class="tools-modal">
+      <div class="tools-modal-header">
+        <span id="toolsModalTitle">Manage Value Lists</span>
+        <button class="tools-modal-close" onclick="closeToolsModal()" title="Close">&times;</button>
+      </div>
+      <div class="tools-modal-body" id="toolsModalBody">
+        <!-- populated by JS -->
+      </div>
+      <div class="tools-modal-footer">
+        <button class="btn" onclick="closeToolsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REV5.e: Legend modal — printable reference sheet -->
+  <div class="tools-modal-overlay" id="legendModalOverlay">
+    <div class="tools-modal">
+      <div class="tools-modal-header">
+        <span>Legend — Value List Reference</span>
+        <button class="tools-modal-close" onclick="closeLegendModal()" title="Close">&times;</button>
+      </div>
+      <div class="tools-modal-body" id="legendModalBody">
+        <!-- populated by JS -->
+      </div>
+      <div class="tools-modal-footer">
+        <button class="btn" onclick="window.print()" title="Print this legend">🖨️ Print</button>
+        <button class="btn" onclick="closeLegendModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REV6: Grading Wizard modal -->
+  <div class="wizard-modal-overlay" id="wizardModalOverlay">
+    <div class="wizard-modal">
+      <div class="wizard-modal-header">
+        <span>📊 Grading Wizard</span>
+        <button class="wizard-modal-close" onclick="closeWizard()" title="Close">&times;</button>
+      </div>
+      <div class="wizard-modal-body" id="wizardModalBody">
+        <!-- populated by JS -->
+      </div>
+      <div class="wizard-modal-footer">
+        <button class="btn" onclick="closeWizard()">Cancel</button>
+        <button class="btn btn-primary" onclick="calculateWizardGrade()">Calculate Grade</button>
+        <button class="btn btn-primary" onclick="applyWizardGradeToField()" style="background:var(--green); border-color:var(--green);">Apply to Grade Field</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REV7: Navigation modal (duplicate/delete) -->
+  <div class="nav-modal-overlay" id="navModalOverlay">
+    <div class="nav-modal">
+      <div class="nav-modal-title" id="navModalTitle">Action</div>
+      <div class="nav-modal-message" id="navModalMessage">Are you sure?</div>
+      <input type="text" class="nav-modal-input" id="navModalInput" placeholder="">
+      <div class="nav-modal-buttons">
+        <button class="btn" onclick="closeNavModal()">Cancel</button>
+        <button class="btn btn-primary" id="navModalAction" onclick="">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
